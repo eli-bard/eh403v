@@ -1,5 +1,3 @@
-import { Baby, Joystick, LucideIcon } from "lucide-react";
-
 interface Calculadoras {
   id: string;
   title: string;
@@ -70,16 +68,6 @@ export const calculators: Calculadoras[] = [
     category: "Neonatologia",
   },
   // PEDIATRIA
-  {
-    id: "dosesbic",
-    title: "Doses de drogas em BIC",
-    icon: "Baby",
-    //iconColor: "black",
-    //bgColor: "white",
-    description:
-      "Escolha sua DVA ou sedoanalgésico para infundir em BIC e faça uma solução",
-    category: "Pediatria",
-  },
   {
     id: "holiday",
     title: "Fórmula de Holliday-Segar",
