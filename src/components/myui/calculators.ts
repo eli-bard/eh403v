@@ -69,7 +69,7 @@ export const calculators: Calculadoras[] = [
   },
   // PEDIATRIA
   {
-    id: "holiday",
+    id: "holliday",
     title: "Fórmula de Holliday-Segar",
     icon: "Baby",
     //iconColor: "black",
