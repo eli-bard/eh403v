@@ -10,7 +10,6 @@ export default function RodwellPage() {
   const [sampleTime, setSampleTime] = useState("");
   const [birthWeight, setBirthWeight] = useState("");
 
-  // Dados laboratoriais
   const [wbc, setWbc] = useState("");
   const [segs, setSegs] = useState("");
   const [bands, setBands] = useState("");
@@ -19,7 +18,6 @@ export default function RodwellPage() {
   const [platelets, setPlatelets] = useState("");
   const [toxicGranulation, setToxicGranulation] = useState(false);
 
-  // Fatores de risco maternos
   const [maternalRisks, setMaternalRisks] = useState({
     bolsaRota: false,
     tpp: false,
@@ -37,22 +35,148 @@ export default function RodwellPage() {
     return differenceInHours(sample, birth);
   };
 
+  type ReferenceLimits = {
+    neutropenia: number;
+    neutrofilia: number;
+    nImaturos: number;
+    ratioIT: number;
+  };
+
+  function getReferenceLimits(
+    peso: number,
+    horas: number
+  ): ReferenceLimits | null {
+    const isLowWeight = peso < 1500;
+    const ranges = [
+      { h: 0, label: "Nascimento" },
+      { h: 12, label: "12 H" },
+      { h: 24, label: "24 H" },
+      { h: 36, label: "36 H" },
+      { h: 48, label: "48 H" },
+      { h: 60, label: "60 H" },
+      { h: 72, label: "72 H" },
+      { h: 120, label: "120 H" },
+      { h: 672, label: "4º ao 28º dia" },
+    ];
+    const closestRange = ranges.reduce((prev, curr) =>
+      horas >= curr.h ? curr : prev
+    );
+    const ref: Record<string, ReferenceLimits> = {
+      Nascimento: {
+        neutropenia: isLowWeight ? 500 : 1800,
+        neutrofilia: isLowWeight ? 6300 : 5400,
+        nImaturos: 1100,
+        ratioIT: 0.16,
+      },
+      "12 H": {
+        neutropenia: isLowWeight ? 1800 : 7800,
+        neutrofilia: isLowWeight ? 12400 : 14500,
+        nImaturos: 1500,
+        ratioIT: 0.16,
+      },
+      "24 H": {
+        neutropenia: isLowWeight ? 2200 : 7000,
+        neutrofilia: isLowWeight ? 14000 : 12600,
+        nImaturos: 1280,
+        ratioIT: 0.15,
+      },
+      "36 H": {
+        neutropenia: isLowWeight ? 1800 : 5400,
+        neutrofilia: isLowWeight ? 11600 : 10600,
+        nImaturos: 1100,
+        ratioIT: 0.13,
+      },
+      "48 H": {
+        neutropenia: isLowWeight ? 1100 : 3600,
+        neutrofilia: isLowWeight ? 9000 : 8500,
+        nImaturos: 850,
+        ratioIT: 0.13,
+      },
+      "60 H": {
+        neutropenia: isLowWeight ? 1100 : 3000,
+        neutrofilia: isLowWeight ? 6000 : 7200,
+        nImaturos: 650,
+        ratioIT: 0.13,
+      },
+      "72 H": {
+        neutropenia: isLowWeight ? 1100 : 1800,
+        neutrofilia: isLowWeight ? 6000 : 7000,
+        nImaturos: 550,
+        ratioIT: 0.13,
+      },
+      "120 H": {
+        neutropenia: isLowWeight ? 1100 : 1800,
+        neutrofilia: isLowWeight ? 6000 : 7000,
+        nImaturos: 500,
+        ratioIT: 0.13,
+      },
+      "4º ao 28º dia": {
+        neutropenia: isLowWeight ? 1100 : 1800,
+        neutrofilia: isLowWeight ? 6000 : 5400,
+        nImaturos: 500,
+        ratioIT: 0.12,
+      },
+    };
+    return ref[closestRange.label];
+  }
+
+  const horasDeVida = getHoursOfLife();
+  const pesoNum = Number(birthWeight);
+  const ref = getReferenceLimits(pesoNum, horasDeVida);
+
   const totalNeutrophils =
     Number(segs) + Number(bands) + Number(metamyelocytes) + Number(myelocytes);
   const immatureNeutrophils =
     Number(bands) + Number(metamyelocytes) + Number(myelocytes);
-
   const ratioIT = totalNeutrophils ? immatureNeutrophils / totalNeutrophils : 0;
   const ratioIM = Number(segs) ? immatureNeutrophils / Number(segs) : 0;
 
-  // ESCALA DE RODWELL (valores fictícios para exemplo - ajuste conforme a tabela real)
+  const neutropenia = totalNeutrophils < (ref?.neutropenia || 0);
+  const neutrofilia = totalNeutrophils > (ref?.neutrofilia || Infinity);
+  const imaturosElevados = immatureNeutrophils > (ref?.nImaturos || 0);
+  const itElevado = ratioIT > (ref?.ratioIT || 0);
+
   let score = 0;
-  if (Number(wbc) < 5000 || Number(wbc) > 30000) score += 1;
-  if (Number(bands) > 1600) score += 1;
-  if (ratioIT > 0.2) score += 2;
-  if (ratioIM > 0.3) score += 1;
-  if (Number(platelets) < 150000) score += 1;
-  if (toxicGranulation) score += 1;
+  const interpretacoes = [] as string[];
+
+  if (
+    (horasDeVida <= 0 && (Number(wbc) < 5000 || Number(wbc) > 25000)) ||
+    (horasDeVida > 0 && horasDeVida <= 24 && Number(wbc) > 30000) ||
+    (horasDeVida > 48 && Number(wbc) > 21000)
+  ) {
+    interpretacoes.push(
+      "Leucocitose ou leucopenia conforme horas de vida (1 ponto)"
+    );
+    score += 1;
+  }
+  if (neutropenia || neutrofilia) {
+    interpretacoes.push("Neutropenia ou neutrofilia (1 ponto)");
+    score += 1;
+  }
+  if (imaturosElevados) {
+    interpretacoes.push("Aumento de neutrófilos imaturos (1 ponto)");
+    score += 1;
+  }
+  if (itElevado) {
+    interpretacoes.push("Índice I/T aumentado (1 ponto)");
+    score += 1;
+  }
+  if (ratioIM >= 0.3) {
+    interpretacoes.push(
+      "Razão de neutrófilos imaturos/segmentados ≥ 0,3 (1 ponto)"
+    );
+    score += 1;
+  }
+  if (toxicGranulation) {
+    interpretacoes.push(
+      "Neutrófilos com vacuolização ou granulação tóxica (1 ponto)"
+    );
+    score += 1;
+  }
+  if (Number(platelets) < 150000) {
+    interpretacoes.push("Plaquetopenia (<150.000) (1 ponto)");
+    score += 1;
+  }
 
   const maternalRiskCount = Object.values(maternalRisks).filter(Boolean).length;
 
@@ -62,13 +186,8 @@ export default function RodwellPage() {
         Calculadora de Escore de Rodwell
       </h1>
 
-      {/* Riscos maternos */}
       <div className="space-y-2">
         <h2 className="text-xl font-semibold">Fatores de risco maternos</h2>
-        <em>
-          Lembrando que os fatores de risco só influenciam na necessidade de
-          avaliar o risco infeccioso{" "}
-        </em>
         {Object.entries(maternalRisks).map(([key, val]) => (
           <Checkbox
             key={key}
@@ -81,7 +200,6 @@ export default function RodwellPage() {
         ))}
       </div>
 
-      {/* Entrada de nascimento */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Dados do nascimento</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -112,12 +230,11 @@ export default function RodwellPage() {
         </div>
       </div>
 
-      {/* Exames laboratoriais */}
       <div className="space-y-2">
         <h2 className="text-xl font-semibold">Parâmetros laboratoriais</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Leucócitos totais (WBC)"
+            label="Leucócitos totais"
             type="number"
             value={wbc}
             onChange={setWbc}
@@ -167,10 +284,9 @@ export default function RodwellPage() {
         height={300}
       />
 
-      {/* Resultados */}
       <section className="mt-6 text-center space-y-2">
         <p>
-          <strong>Horas de vida:</strong> {getHoursOfLife()}h
+          <strong>Horas de vida no momento da coleta:</strong> {horasDeVida}h
         </p>
         <p>
           <strong>Índice I/T:</strong> {ratioIT.toFixed(2)}
@@ -182,6 +298,17 @@ export default function RodwellPage() {
           <strong>Fatores de risco maternos:</strong> {maternalRiskCount}
         </p>
         <p className="text-xl font-bold">Escore de Rodwell: {score}</p>
+
+        {interpretacoes.length > 0 && (
+          <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded space-y-1 text-red-800">
+            <p className="font-semibold">Alterações detectadas:</p>
+            <ul className="list-disc list-inside">
+              {interpretacoes.map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
     </main>
   );

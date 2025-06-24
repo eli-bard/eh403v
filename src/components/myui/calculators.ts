@@ -11,15 +11,6 @@ interface Calculadoras {
 export const calculators: Calculadoras[] = [
   // NEONATOLOGIA
   {
-    id: "hvdaneo",
-    title: "HV da neonatologia",
-    icon: "Baby",
-    //iconColor: "text-black-500",
-    //bgColor: "text-white-500",
-    description: "Monte sua HV da neonatologia com cálcio, sódio e potássio",
-    category: "Neonatologia",
-  },
-  {
     id: "idadedorn",
     title: "Idade do RN",
     icon: "Baby",
@@ -27,25 +18,6 @@ export const calculators: Calculadoras[] = [
     //bgColor: "white",
     description:
       "Calcule a idade em horas/dias e a idade gestacional corrigida do RN",
-    category: "Neonatologia",
-  },
-  {
-    id: "ofertasucin",
-    title: "Ofertas conforme leite UCIN",
-    icon: "Baby",
-    //iconColor: "black",
-    //bgColor: "white",
-    description:
-      "Calcule ofertas calórica, proteica, de cálcio e de fósforo conforme o volume e o tipo de leite que o RN está recebendo",
-    category: "Neonatologia",
-  },
-  {
-    id: "apgar",
-    title: "APGAR",
-    icon: "Baby",
-    //iconColor: "black",
-    //bgColor: "white",
-    description: "Verifique o APGAR do RN",
     category: "Neonatologia",
   },
   {
@@ -59,12 +31,49 @@ export const calculators: Calculadoras[] = [
     category: "Neonatologia",
   },
   {
+    id: "fototerapia",
+    title: "Icterícia neonatal",
+    icon: "Baby",
+    //iconColor: "black",
+    //bgColor: "white",
+    description: "Veja os níveis de indicação de fototerapia conforme o exame",
+    category: "Neonatologia",
+  },
+  {
     id: "rodwell",
     title: "Rodwell",
     icon: "Baby",
     //iconColor: "black",
     //bgColor: "white",
     description: "Calcule o risco infeccioso do RN",
+    category: "Neonatologia",
+  },
+  {
+    id: "apgar",
+    title: "APGAR",
+    icon: "Baby",
+    //iconColor: "black",
+    //bgColor: "white",
+    description: "Verifique o APGAR do RN",
+    category: "Neonatologia",
+  },
+  {
+    id: "ofertasucin",
+    title: "Ofertas conforme leite UCIN",
+    icon: "Baby",
+    //iconColor: "black",
+    //bgColor: "white",
+    description:
+      "Calcule ofertas calórica, proteica, de cálcio e de fósforo conforme o volume e o tipo de leite que o RN está recebendo",
+    category: "Neonatologia",
+  },
+  {
+    id: "hvdaneo",
+    title: "HV da neonatologia",
+    icon: "Baby",
+    //iconColor: "text-black-500",
+    //bgColor: "text-white-500",
+    description: "Monte sua HV da neonatologia com cálcio, sódio e potássio",
     category: "Neonatologia",
   },
   // PEDIATRIA
