@@ -194,20 +194,19 @@ export default function BilirrubinaPage() {
           <strong>Resultado:</strong>
         </p>
         <p>
-          {resultados.nf && (
-            <span className="text-yellow-600">
-              Nível de fototerapia atingido.
-            </span>
-          )}
-          {resultados.nex && (
+          {resultados.nex ? (
             <span className="text-red-600 block">
-              Nível de exsanguineotransfusão atingido.
+              Nível de exsanguineotransfusão (NEx) atingido.
             </span>
-          )}
-          {!resultados.nf && !resultados.nex && (
+          ) : resultados.nf ? (
+            <span className="text-yellow-600">
+              Nível de fototerapia (NF) atingido.
+            </span>
+          ) : (
             <span className="text-green-600">Nenhum limite atingido.</span>
           )}
         </p>
+
         <p className="text-sm text-gray-600">
           Referência: Sociedade Brasileira de Pediatria, 2021.
         </p>
@@ -216,18 +215,21 @@ export default function BilirrubinaPage() {
         <Image
           src="/imgs/calculatorimgs/ictericia1.png"
           alt="Nível de BT para indicação de fototerapia e est em RN > 35 semanas"
+          className="text-align: justify"
           width={500}
           height={300}
         />
         <Image
           src="/imgs/calculatorimgs/ictericia2.png"
           alt="Nível de BT para indicação de fototerapia e est em RN < 35 semanas"
+          className="text-align: justify"
           width={500}
           height={300}
         />
         <Image
           src="/imgs/calculatorimgs/ictericiasusp.png"
           alt="Parâmetros Capurro somático"
+          className="text-align: justify"
           width={300}
           height={100}
         />

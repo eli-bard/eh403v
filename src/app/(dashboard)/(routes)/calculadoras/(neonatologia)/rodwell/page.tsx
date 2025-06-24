@@ -280,6 +280,7 @@ export default function RodwellPage() {
       <Image
         src="/imgs/calculatorimgs/rodwell.png"
         alt="Tabela do escore de Rodwell"
+        className="text-align: justify"
         width={500}
         height={300}
       />
